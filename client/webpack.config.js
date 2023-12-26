@@ -7,7 +7,7 @@ module.exports = (env, argv) => {
   const isProduction = argv.mode === 'production';
 
   return {
-    mode: isProduction ? 'production' : 'development',
+    mode: 'development',
     entry: {
       main: './src/js/index.js',
       install: './src/js/install.js',
@@ -22,6 +22,8 @@ module.exports = (env, argv) => {
         filename: 'index.html',
       }),
       new WebpackPwaManifest({
+        fingerprints: false,
+        inject: true,
         name: "Just Another Text Editor",
         short_name: "J.A.T.E",
         description: 'A Progressive Web Application for note-taking and code snippets.',
@@ -33,6 +35,7 @@ module.exports = (env, argv) => {
           {
             src: path.resolve('src/images/logo.png'),
             sizes: [96, 128, 192, 256, 384, 512],
+            destination: path.join('assets', 'icons'),
           },
         ],
       }),
@@ -44,12 +47,16 @@ module.exports = (env, argv) => {
     module: {
       rules: [
         {
-          test: /\.js$/,
+          test: /\.m?js$/,
           exclude: /node_modules/,
           use: {
             loader: 'babel-loader',
             options: {
               presets: ['@babel/preset-env'],
+              plugins: [
+                '@babel/plugin-proposal-object-rest-spread',
+                '@babel/transform-runtime',
+              ],
             },
           },
         },
